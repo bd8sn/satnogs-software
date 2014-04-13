@@ -27,14 +27,19 @@ ISS_TLE = {
 "TLE_LINE2": "2 25544 051.6474 061.0213 0003735 283.8131 171.7524 15.49723829881268"
 }
 
+SEDSAT1_TLE = {
+"TLE_LINE0": "0 SEDSAT 1",
+"TLE_LINE1": "1 25509U 98061B   14101.59573229  .00001029  00000-0  18850-3 0  7270",
+"TLE_LINE2": "2 25509 031.4330 177.6836 0350016 250.9805 255.0604 14.29464209807614"
+}
 
 def main():
     observer = HSGR_COORDS
-    sat_tle_dict = ISS_TLE
+    sat_tle_dict = SEDSAT1_TLE
     # tracker init
     tr = tracker.tracker()
     tr.add_station('hsgr', observer['lat'], observer['lon'], observer['elev'])
-    tr.add_satellite_from_tle(sat_tle_dict, 'ISS')
+    tr.add_satellite_from_tle(sat_tle_dict, '0 SEDSAT 1')
 
     # debug
     print((tr.stations))
@@ -48,8 +53,8 @@ def main():
 
 def track(tr):
     # track satellite
-    for i in range(0, 10000):
-        p = tr.pinpoint('hsgr', 'ISS')
+    for i in range(0, 1000000):
+        p = tr.pinpoint('hsgr', '0 SEDSAT 1')
         if p['ok']:
             print((datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
                 'alt:', p['alt'], 'az:', p['az'],
@@ -58,23 +63,26 @@ def track(tr):
 
 
 def track_and_send(tr):
+    ### daemon command on beagle:
+    ### rotctld -m 202 -v -r /dev/ttyACM0
     import os
 
+    print "t&s"
     # create and open socket
     sock = trackersocket.trackersocket()
-    sock.connect('10.2.16.131', 4533)  # change to correct address
+    sock.connect('10.2.110.108', 4533)  # change to correct address
     # track satellite
-    for i in range(0, 100):
-        p = tr.pinpoint('hsgr', 'ISS')
+    for i in range(0, 10000):
+        p = tr.pinpoint('hsgr', '0 SEDSAT 1')
         if p['ok']:
-            s = 'P ' + str((p['az'].conjugate())) + ' ' + str(abs((p['alt'].conjugate())))
+            s = 'P ' + str((p['az'].conjugate())) + ' ' + str(p['alt'].conjugate())
             #print s + os.linesep
             print s + str('\n')
             #ss = "%r"%s
             #print ss[1:-1] + os.linesep
             sock.send(s + str('\n'))
             time.sleep(SLEEP_TIME)
-
+    sock.disconnect()
 
 def windows(tr):
     # calculate visibility windows for next 24 hours

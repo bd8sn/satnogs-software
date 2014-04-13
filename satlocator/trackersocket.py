@@ -6,7 +6,7 @@ class trackersocket:
 
     TCP_IP = '127.0.0.1'
     TCP_PORT = 5005
-    BUFFER_SIZE = 1024
+    BUFFER_SIZE = 2048
 
     connected = False
 
@@ -29,6 +29,8 @@ class trackersocket:
         if not self.connected:
             self.connect()
         self.s.send(message)
+        data = self.s.recv(self.BUFFER_SIZE)
+        print data
 
     def disconnect(self):
         self.s.close()
