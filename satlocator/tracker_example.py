@@ -27,12 +27,19 @@ def main():
     # tracker init
     tr = tracker.tracker()
     tr.add_station('hsgr', observer['lat'], observer['lon'], observer['elev'])
-    tr.add_satellite(sat_tle_dict, 'ISS')
+    tr.add_satellite_from_tle(sat_tle_dict, 'ISS')
+
+    # debug
+    print((tr.stations))
+    print((tr.satellites))
+
     # track satellite
-    for i in range(0, 10000):
+    for i in range(0, 1000000):
         p = tr.pinpoint('hsgr', 'ISS')
         if p['ok']:
-            print((datetime.now(), 'alt:', p['alt'], 'az:', p['az']))
+            print((datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
+                'alt:', p['alt'], 'az:', p['az'],
+                'v:', p['rng_vlct'], 'r:', p['rng']))
         time.sleep(SLEEP_TIME)
 
 main()
