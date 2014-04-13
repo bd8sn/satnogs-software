@@ -73,7 +73,7 @@ class tracker:
             return False
         if friendly_name is None:
             friendly_name = tle1
-        self.satellites['friendly_name'] = sat_ephem
+        self.satellites[friendly_name] = sat_ephem
         return True
 
     def remove_satellite(self, friendly_name):
@@ -129,7 +129,7 @@ class tracker:
             return True
         return False
 
-    def pinpoint(self, station_name, satellite_name, time=datetime.now()):
+    def pinpoint(self, station_name, satellite_name, timestamp=None):
         """ Provides azimuth and altitude of tracked object.
 
             Args:
@@ -146,9 +146,14 @@ class tracker:
         else:
             return {'ok': False}
 
-        station.date = time.strftime("%Y-%m-%d %H:%M:%S.%f")
+        if timestamp is None:
+            timestamp = datetime.now()
+
+        station.date = timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
         satellite.compute(station)
-        return {'alt:': satellite.alt, 'az:': satellite.az, 'ok': True}
+        return {'alt': satellite.alt, 'az': satellite.az,
+            'rng': satellite.range, 'rng_vlct': satellite.range_velocity,
+            'ok': True}
 
     def calculate_windows(self, station_name, satellite_name, time_start=None, time_stop=None):
         """ Calculates windows of visibility of a satellite from an observation point.
