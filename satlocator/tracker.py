@@ -183,13 +183,25 @@ class tracker:
         if time_end is None:
             time_end = datetime.now() + timedelta(days=1)
 
-        i = 0
         # calculate windows
         station.date = time_start.strftime("%Y-%m-%d %H:%M:%S.%f")
+        #i = 0  # remove
         while True:
-            i += 1
+            #i += 1  # remove
             satellite.compute(station)
             window = station.next_pass(satellite)
+            # Weird bug in ephem library's next_pass function
+            # returns set time earlier than rise time, leads to infinite loop
+            if not self.check_window_sanity(window):
+                window_new = list(window)
+                window_new[0] = window[4]  # replace 0 with 4
+                window_new[1] = window[1]
+                window_new[2] = window[2]
+                window_new[3] = window[3]
+                window_new[4] = window[0]  # replace 4 with 0
+                window_new[5] = window[5]
+                window = window_new
+                # weird bug fix end.
             if ephem.Date(window[0]).datetime() < time_end:
                 windows['windows'].append(
                     {
@@ -201,13 +213,20 @@ class tracker:
                     # window end outside of window bounds; break
                     break
                 else:
-                    print 'another pass', str(i)
+                    #if i > 100:  # remove
+                        #break  # remove
                     time_start_new = ephem.Date(window[4]).datetime() + timedelta(seconds=1)
                     station.date = time_start_new.strftime("%Y-%m-%d %H:%M:%S.%f")
             else:
                 # window start outside of window bounds
                 break
         return windows
+
+    def check_window_sanity(self, window):
+        if ephem.Date(window[0]).datetime() > ephem.Date(window[4]).datetime():
+            print(window)
+            return False
+        return True
 
     def calculate_all_windows(self, station_list, satellite_name, time_start=None, time_end=None):
         """ Calculates all windows of visibility of a satellite from all provided observation points.
@@ -221,7 +240,21 @@ class tracker:
             Returns:
                 Dictionary containing observation window periods.
         """
-        pass
+        # return object
+        result_multi = {'stations': [], 'ok': True}
+
+        if satellite_name not in self.satellites:
+            return {'ok': False, 'reason': 'satellite not found in tracker'}
+
+        # get objects
+        for station_name in station_list:
+            if isinstance(station_name, str) and station_name in self.stations:
+                result = self.calculate_windows(station_name, satellite_name)
+                result['station'] = station_name
+                result_multi['stations'].append(result)
+            else:
+                result_multi['stations'].append({'station': '', 'ok': False, 'reason': 'station not found in tracker'})
+        return result_multi
 
     def calculate_all_windows_multi(self, station_list, satellite_list, time_start=None, time_end=None):
         """ Calculates all windows of visibility of provided satellites from all provided observation points.
