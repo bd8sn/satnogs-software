@@ -34,6 +34,8 @@ SEDSAT1_TLE = {
 }
 
 def main():
+    """ Sets up station and satellite to track.
+    """
     observer = HSGR_COORDS
     sat_tle_dict = SEDSAT1_TLE
     # tracker init
@@ -52,6 +54,8 @@ def main():
 
 
 def track(tr):
+    """ Track satellite based on TLE. Does NOT communicate with antenna motors.
+    """
     # track satellite
     for i in range(0, 1000000):
         p = tr.pinpoint('hsgr', '0 SEDSAT 1')
@@ -63,11 +67,12 @@ def track(tr):
 
 
 def track_and_send(tr):
+    ''' Tracks given satellite and sends positioning commands to antenna.
+    '''
     ### daemon command on beagle:
     ### rotctld -m 202 -v -r /dev/ttyACM0
     import os
 
-    print "t&s"
     # create and open socket
     sock = trackersocket.trackersocket()
     sock.connect('10.2.110.108', 4533)  # change to correct address
@@ -84,7 +89,10 @@ def track_and_send(tr):
             time.sleep(SLEEP_TIME)
     sock.disconnect()
 
+
 def windows(tr):
+    """ Calculate visibility windows for give satellite from given station.
+    """
     # calculate visibility windows for next 24 hours
     print((tr.calculate_windows('hsgr', 'ISS')))
 
