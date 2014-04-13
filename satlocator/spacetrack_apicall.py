@@ -11,9 +11,7 @@ class apicaller:
     url_base = "https://www.space-track.org/"
     url_login = "ajaxauth/login"
     url_logout = "ajaxauth/logout"
-    url_request = "basicspacedata/query/class/tle/format/json/NORAD_CAT_ID/25544/orderby/EPOCH desc/limit/22"
-    #"basicspacedata/query/class/boxscore/format/json"
-    #"basicspacedata/query/class/tle/orderby/TLE_LINE0 asc/limit/100/metadata/false"
+    url_request = "basicspacedata/query/class/tle/format/json/NORAD_CAT_ID/25544/orderby/EPOCH%20desc/limit/1"
 
     def __init__(self, credentials=None):
         if credentials is not None:
