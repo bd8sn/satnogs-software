@@ -34,7 +34,7 @@ def main():
     print((tr.satellites))
 
     # track satellite
-    for i in range(0, 1000000):
+    for i in range(0, 100000):
         p = tr.pinpoint('hsgr', 'ISS')
         if p['ok']:
             print((datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
