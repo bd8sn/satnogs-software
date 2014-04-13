@@ -92,12 +92,12 @@ class tracker:
         else:
             return True
 
-    def add_station(self, name, geolong, geolat, elevation=0):
+    def add_station(self, name, geolat, geolong, elevation=0):
         """ Adds a station or objervation point to the tracker.
             Args:
                 name: name of observation point.
-                geolong: geolocation longitude, in float format.
                 geolat: geolocation latitude, in float format.
+                geolong: geolocation longitude, in float format.
                 elevation: geolocation elevation, in meters.
 
             Returns:
@@ -129,10 +129,26 @@ class tracker:
             return True
         return False
 
-    def pinpoint(self, station_name, satellite_name, time=None):
+    def pinpoint(self, station_name, satellite_name, time=datetime.now()):
         """ Provides azimuth and altitude of tracked object.
+
+            Args:
+                station_name: friendly name of observation point.
+                satellite_name: friendly name of satellite.
+                time: timestamp we want to use for pinpointing the observed object.
+
+            returns:
+                Dictionary containing azimuth and altitude. Also contains "ok" for error detection.
         """
-        pass
+        if station_name in self.stations and satellite_name in self.satellites:
+            station = self.stations[station_name]
+            satellite = self.satellites[satellite_name]
+        else:
+            return {'ok': False}
+
+        station.date = time.strftime("%Y-%m-%d %H:%M:%S.%f")
+        satellite.compute(station)
+        return {'alt:': satellite.alt, 'az:': satellite.az, 'ok': True}
 
     def calculate_windows(self, station_name, satellite_name, time_start=None, time_stop=None):
         """ Calculates windows of visibility of a satellite from an observation point.
