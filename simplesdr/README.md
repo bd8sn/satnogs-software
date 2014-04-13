@@ -4,7 +4,11 @@ A simple SDR reader of a given frequency.
 
 ## Run
 
-It depends on bottle and pyrtlsdr:
+System dependencies:
+
+`yum install gr-osmosdr`
+
+Python dependencies (that can be installed inside a virtualenv):
 
 `pip install -r requirements.txt`
 
