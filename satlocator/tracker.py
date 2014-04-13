@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import ephem
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import sys
 
@@ -155,18 +155,85 @@ class tracker:
             'rng': satellite.range, 'rng_vlct': satellite.range_velocity,
             'ok': True}
 
-    def calculate_windows(self, station_name, satellite_name, time_start=None, time_stop=None):
+    def calculate_windows(self, station_name, satellite_name, time_start=None, time_end=None):
         """ Calculates windows of visibility of a satellite from an observation point.
-        """
-        pass
 
-    def calculate_all_windows(self, station_list, satellite_name, time_start=None, time_stop=None):
+            Args:
+                station_name: friendly name of station observation window will be calculated for.
+                satellite_name: friendly name of satellite we wish to observe.
+                time_start: datetime object denoting start of calculation period.
+                time_end: datetime object denoting end of calculation period.
+
+            Returns:
+                Dictionary containing observation window periods.
+        """
+        # return object
+        windows = {'ok': True, 'windows': []}
+
+        # get objects
+        if station_name in self.stations and satellite_name in self.satellites:
+            station = self.stations[station_name]
+            satellite = self.satellites[satellite_name]
+        else:
+            return {'ok': False}
+
+        # initialise window borders
+        if time_start is None:
+            time_start = datetime.now()
+        if time_end is None:
+            time_end = datetime.now() + timedelta(days=1)
+
+        i = 0
+        # calculate windows
+        station.date = time_start.strftime("%Y-%m-%d %H:%M:%S.%f")
+        while True:
+            i += 1
+            satellite.compute(station)
+            window = station.next_pass(satellite)
+            if ephem.Date(window[0]).datetime() < time_end:
+                windows['windows'].append(
+                    {
+                        'start': ephem.Date(window[0]).datetime(),
+                        'end': ephem.Date(window[4]).datetime(),
+                        'az_start': window[1]
+                    })
+                if ephem.Date(window[4]).datetime() > time_end:
+                    # window end outside of window bounds; break
+                    break
+                else:
+                    print 'another pass', str(i)
+                    time_start_new = ephem.Date(window[4]).datetime() + timedelta(seconds=1)
+                    station.date = time_start_new.strftime("%Y-%m-%d %H:%M:%S.%f")
+            else:
+                # window start outside of window bounds
+                break
+        return windows
+
+    def calculate_all_windows(self, station_list, satellite_name, time_start=None, time_end=None):
         """ Calculates all windows of visibility of a satellite from all provided observation points.
+
+            Args:
+                station_list: list of friendly names of stations observation window will be calculated for.
+                satellite_name: friendly name of satellite we wish to observe.
+                time_start: datetime object denoting start of calculation period.
+                time_end: datetime object denoting end of calculation period.
+
+            Returns:
+                Dictionary containing observation window periods.
         """
         pass
 
-    def calculate_all_windows_multi(self, station_list, satellite_list, time_start=None, time_stop=None):
+    def calculate_all_windows_multi(self, station_list, satellite_list, time_start=None, time_end=None):
         """ Calculates all windows of visibility of provided satellites from all provided observation points.
+
+            Args:
+                station_list: list of friendly names of stations observation window will be calculated for.
+                satellite_list: list of friendly names of satellites we wish to observe.
+                time_start: datetime object denoting start of calculation period.
+                time_end: datetime object denoting end of calculation period.
+
+            Returns:
+                Dictionary containing observation window periods.
         """
         pass
 
