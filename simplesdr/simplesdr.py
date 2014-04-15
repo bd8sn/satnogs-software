@@ -29,7 +29,7 @@ def get_data(freq):
 
     data = sdr.read_samples(512)
 
-    if not data:
+    if not data.any():
         app.abort(404, 'No data!')
 
     d = []
