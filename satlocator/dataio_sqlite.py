@@ -41,20 +41,20 @@ def get_satellite_list():
     pass
 
 
-def set_schedule_slot():
+def set_schedule_slot(slot):
     """ Reserves a schedule slot.
     """
     pass
 
 
-def del_schedule_slot():
+def del_schedule_slot(slot):
     """ Deletes a schedule reservation.
     """
     pass
 
 
 # does this function move (too much) logic into the db?
-def check_schedule_slot_availability():
+def check_schedule_slot_availability(slot):
     """ Checks whether a schedule slot is available for reservation.
     """
     pass

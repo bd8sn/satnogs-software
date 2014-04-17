@@ -4,71 +4,83 @@
     No specific implementation should be used in this module.
     Calls to this module should be backend agnostic.
 """
-BACKEND = 'SQLITE'
+
+from dataio_backend_finder import dataio_backend
 
 
 def set_observer(observer):
     """ Defines a new observer.
     """
-    pass
+    result = dataio_backend.set_observer(observer)
+    return result
 
 
 def get_observer(observer_name):
     """ Retrieves an observer by name.
     """
-    pass
+    result = dataio_backend.get_observer(observer_name)
+    return result
 
 
 def get_observer_list():
     """ Retrieves all observers.
     """
-    pass
+    result = dataio_backend.get_observer_list()
+    return result
 
 
 def set_satellite(satellite):
     """ Defines a new satellite.
     """
-    pass
+    result = dataio_backend.set_satellite(satellite)
+    return result
 
 
 def get_satellite(satellite_name):
     """ Retrieves a satellite.
     """
-    pass
+    result = dataio_backend.get_satellite(satellite_name)
+    return result
 
 
 def get_satellite_list():
     """ Retrieves all satellites.
     """
-    pass
+    result = dataio_backend.get_satellite_list()
+    return result
 
 
-def set_schedule_slot():
+def set_schedule_slot(slot):
     """ Reserves a schedule slot.
     """
-    pass
+    result = dataio_backend.set_schedule_slot(slot)
+    return result
 
 
-def del_schedule_slot():
+def del_schedule_slot(slot):
     """ Deletes a schedule reservation.
     """
-    pass
+    result = dataio_backend.del_schedule_slot(slot)
+    return result
 
 
 # does this function move (too much) logic into the db?
-def check_schedule_slot_availability():
+def check_schedule_slot_availability(slot):
     """ Checks whether a schedule slot is available for reservation.
     """
-    pass
+    result = dataio_backend.check_schedule_slot_availability(slot)
+    return result
 
 
 def get_schedule_list():
     """ Retrieves schedule.
     """
-    pass
+    result = dataio_backend.get_schedule_list()
+    return result
 
 
 def get_next_schedule_slot():
     """ Retrieves nearest reservation.
     """
-    pass
+    result = dataio_backend.get_next_schedule_slot()
+    return result
