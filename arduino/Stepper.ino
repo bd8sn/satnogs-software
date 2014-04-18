@@ -37,6 +37,26 @@ void stepper_move()
 
 }
 
+int path( double cmdAz)
+{
+  int sign = 0, stepTemp;
+  double PosAz = cmdAz - step2deg(stepPosAz);
+  double distAz = abs(PosAz);
+      
+  if (distAz < 180)
+    stepAz = deg2step(PosAz);
+  else
+  {
+    if (PosAz > 0)
+      sign = -1;
+    else
+      sign = 1;
+    stepTemp = deg2step((360-PosAz)*sign);
+  }
+  
+  return stepTemp;
+}
+
 int deg2step(double deg)
 {
   return(60*SPD*deg/360);

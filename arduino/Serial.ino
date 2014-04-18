@@ -18,7 +18,8 @@ void cmd_proc()
       {
         strncpy(data, buffer+2, 100);
         double cmdAz = atof(data);
-        stepAz = deg2step(cmdAz)-stepPosAz;
+        
+        stepAz = path(cmdAz);        
       }
       else if (buffer[0] == 'E' && buffer[1] == 'L')
       {
