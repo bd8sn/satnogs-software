@@ -11,7 +11,7 @@ SQLITE_DATABASE_NAME = 'satlocator.sqlite.db'  # ':memory:' for in-memory-only d
 
 # TODO: Move this into an iterable structure (a dictionary perhaps?)
 SQLITE_SCHEMA_OBSERVER = '''CREATE TABLE IF NOT EXISTS observer
-                            (name text, latitude text, longitude text, elevation integer)'''
+                            (name text, latitude DECIMAL(4,6), longitude DECIMAL(4,6), elevation integer)'''
 SQLITE_SCHEMA_SATELLITE = '''CREATE TABLE IF NOT EXISTS satellite
                             (name text, norad_id text, tle0 text, tle1 text, tle2 text)'''
 SQLITE_SCHEMA_SCHEDULE = '''CREATE TABLE IF NOT EXISTS schedule
@@ -51,37 +51,70 @@ def _verify_schema():
 def set_observer(observer):
     """ Defines a new observer.
     """
-    pass
+    # TODO: Add checks
+    name = observer['name']
+    lat = observer['lat']
+    lon = observer['lon']
+    elev = observer['elev']
+    # create entry
+    entry = (name, lat, lon, elev)
+    c = _cursor()
+    c.execute('INSERT INTO observer VALUES (?,?,?,?)', entry)  # TODO: add try/except
 
 
 def get_observer(observer_name):
     """ Retrieves an observer by name.
     """
-    pass
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT * FROM observer WHERE name=?", (observer_name,))
+    rows = c.fetchall()
+    for row in rows:
+        print(row)
 
 
 def get_observer_list():
     """ Retrieves all observers.
     """
-    pass
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT * FROM observer")
+    rows = c.fetchall()
+    for row in rows:
+        print(row)
 
 
 def set_satellite(satellite):
     """ Defines a new satellite.
     """
-    pass
+    # TODO: Add checks
+    name = satellite['name']
+    norad_id = satellite['norad_id']
+    tle0 = satellite['tle0']
+    tle1 = satellite['tle1']
+    tle2 = satellite['tle2']
+    # create entry
+    entry = (name, norad_id, tle0, tle1, tle2)
+    c = _cursor()
+    c.execute('INSERT INTO satellite VALUES (?,?,?,?,?)', entry)  # TODO: add try/except
 
 
 def get_satellite(satellite_name):
     """ Retrieves a satellite.
     """
-    pass
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT * FROM satellite WHERE name=?", (satellite_name,))
+    rows = c.fetchall()
+    for row in rows:
+        print(row)
 
 
 def get_satellite_list():
     """ Retrieves all satellites.
     """
-    pass
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT * FROM satellite")
+    rows = c.fetchall()
+    for row in rows:
+        print(row)
 
 
 def set_schedule_slot(slot):
@@ -106,7 +139,11 @@ def check_schedule_slot_availability(slot):
 def get_schedule_list():
     """ Retrieves schedule.
     """
-    pass
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT * FROM schedule")
+    rows = c.fetchall()
+    for row in rows:
+        print(row)
 
 
 def get_next_schedule_slot():
@@ -124,7 +161,10 @@ def set_current_observer(observer):
 def get_current_observer():
     """ Retrieves current observer.
     """
-    pass
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT value FROM session WHERE param=?", ('current_observer',))
+    rows = c.fetchall()
+    return rows
 
 
 def set_current_satellite(satellite):
@@ -136,4 +176,7 @@ def set_current_satellite(satellite):
 def get_current_satellite():
     """ Retrieves current satellite.
     """
-    pass
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT value FROM session WHERE param=?", ('current_satellite',))
+    rows = c.fetchall()
+    return rows
