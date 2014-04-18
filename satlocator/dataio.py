@@ -84,3 +84,31 @@ def get_next_schedule_slot():
     """
     result = dataio_backend.get_next_schedule_slot()
     return result
+
+
+def set_current_observer(observer):
+    """ Defines current observer.
+    """
+    result = dataio_backend.set_current_observer(observer)
+    return result
+
+
+def get_current_observer():
+    """ Retrieves current observer.
+    """
+    result = dataio_backend.get_current_observer()
+    return result
+
+
+def set_current_satellite(satellite):
+    """ Defines current satellite.
+    """
+    result = dataio_backend.set_current_satellite(satellite)
+    return result
+
+
+def get_current_satellite():
+    """ Retrieves current satellite.
+    """
+    result = dataio_backend.get_current_satellite()
+    return result
