@@ -48,9 +48,12 @@ def _list2dict(result_type, result):
                 d['results'].append({'name': r[0], 'lat': r[1], 'lon': r[2], 'elev': r[3]})
         elif 'satellite' == result_type:
             for r in result:
-                d['results'].append({'name': r[0], 'norad_id': r[1], 'tle0': r[2], 'tle1': r[3], 'tle2': r[4]})
+                d['results'].append({'name': r[0], 'norad_id': r[1],
+                                    'tle0': r[2], 'tle1': r[3], 'tle2': r[4]})
         elif 'schedule' == result_type:
-            pass
+            for r in result:
+                d['results'].append({'date_start': r[0], 'date_end': r[1],
+                                    'observer': r[2], 'satellite': r[3], 'owner': r[4]})
         else:
             d['ok'] = False
     return d
@@ -124,27 +127,68 @@ def get_satellite_list():
 def set_schedule_slot(slot):
     """ Reserves a schedule slot.
     """
-    pass
+    #(date text, observer text, satellite text, owner text)
+    date_start = slot['date_start']
+    date_end = slot['date_end']
+    observer = slot['observer']
+    satellite = slot['satellite']
+    if 'owner' not in slot:
+        slot['owner'] = 'me'
+    owner = slot['owner']
+    # create entry
+    entry = (date_start, date_end, observer, satellite, owner)
+    c = _cursor()
+    c.execute('INSERT INTO schedule VALUES (?,?,?,?,?)', entry)  # TODO: add try/except
+    return True
 
 
-def del_schedule_slot(slot):
+def del_schedule_slot(date_start):
     """ Deletes a schedule reservation.
     """
-    pass
+    if get_schedule_slot(date_start) is not []:
+        c = _cursor()
+        c.execute("DELETE FROM schedule where date_start=?", (date_start,))
+        return True
+    else:
+        return False
 
 
-# does this function move (too much) logic into the db?
-def check_schedule_slot_availability(slot):
+def check_schedule_slot_availability(date_start, date_end):
     """ Checks whether a schedule slot is available for reservation.
     """
-    pass
+    c = _cursor()
+    # TODO: NEEDS PROPER LIMIT CHECKING (will do in upcoming commit)
+    c.execute("SELECT * FROM schedule where date_start>? and date_end<?", (date_start, date_end))
+    rows = c.fetchall()
+    if rows == []:
+        return True
+    else:
+        return False
+
+
+def get_schedule_slot(date_start):
+    """ Retrieves specified schedule slot, if it exists.
+    """
+    c = _cursor()
+    c.execute("SELECT * FROM schedule where date_start=?", (date_start,))
+    rows = c.fetchall()
+    return _list2dict('schedule', rows)
 
 
 def get_schedule_list():
-    """ Retrieves schedule.
+    """ Retrieves full schedule list.
     """
     c = _cursor()  # with _cursor() as c:
     c.execute("SELECT * FROM schedule")
+    rows = c.fetchall()
+    return _list2dict('schedule', rows)
+
+
+def get_schedule_list_by_owner(owner):
+    """ Retrieves full schedule list.
+    """
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT * FROM schedule where owner=?", (owner,))
     rows = c.fetchall()
     return _list2dict('schedule', rows)
 
@@ -193,3 +237,10 @@ def get_current_satellite():
     c.execute("SELECT parameter, value FROM session WHERE param=?", ('current_satellite',))
     rows = c.fetchall()
     return rows[0][0]
+
+
+def _get_db_schema():
+    c = _cursor()  # with _cursor() as c:
+    c.execute(cfg.SQLITE_SCHEMA_SCHEMA)
+    rows = c.fetchall()
+    return rows
