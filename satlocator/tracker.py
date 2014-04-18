@@ -269,4 +269,3 @@ class tracker:
                 Dictionary containing observation window periods.
         """
         pass
-
