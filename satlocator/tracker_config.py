@@ -9,6 +9,11 @@ SQLITE_SCHEMA_OBSERVER = '''CREATE TABLE IF NOT EXISTS observer
 SQLITE_SCHEMA_SATELLITE = '''CREATE TABLE IF NOT EXISTS satellite
                             (name text, norad_id text, tle0 text, tle1 text, tle2 text)'''
 SQLITE_SCHEMA_SCHEDULE = '''CREATE TABLE IF NOT EXISTS schedule
-                            (date text, observer text, satellite text, owner text)'''
+                            (date_start text, date_end text, observer text, satellite text, owner text)'''
 SQLITE_SCHEMA_SESSION = '''CREATE TABLE IF NOT EXISTS session
                             (parameter text, value text)'''
+SQLITE_SCHEMA_SCHEMA = '''SELECT * FROM sqlite_master'''
+
+
+TRACKING_RECEIVER_IP = ''
+TRACKING_RECEIVER_PORT = 4533  # default rotctld port is 4533

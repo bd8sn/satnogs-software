@@ -64,7 +64,6 @@ def del_schedule_slot(slot):
     return result
 
 
-# does this function move (too much) logic into the db?
 def check_schedule_slot_availability(slot):
     """ Checks whether a schedule slot is available for reservation.
     """

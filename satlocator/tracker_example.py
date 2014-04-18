@@ -33,6 +33,7 @@ SEDSAT1_TLE = {
 "TLE_LINE2": "2 25509 031.4330 177.6836 0350016 250.9805 255.0604 14.29464209807614"
 }
 
+
 def main():
     """ Sets up station and satellite to track.
     """
@@ -71,7 +72,7 @@ def track_and_send(tr):
     '''
     ### daemon command on beagle:
     ### rotctld -m 202 -v -r /dev/ttyACM0
-    import os
+    #import os
 
     # create and open socket
     sock = trackersocket.trackersocket()
@@ -83,8 +84,6 @@ def track_and_send(tr):
             s = 'P ' + str((p['az'].conjugate())) + ' ' + str(p['alt'].conjugate())
             #print s + os.linesep
             print s + str('\n')
-            #ss = "%r"%s
-            #print ss[1:-1] + os.linesep
             sock.send(s + str('\n'))
             time.sleep(SLEEP_TIME)
     sock.disconnect()
