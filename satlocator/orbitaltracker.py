@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+""" Original OO implementation of orbital tracking functionality.
+"""
 import ephem
 from datetime import datetime, timedelta
 import time
 import sys
 
 
-class tracker:
+class orbitaltracker:
     """ Handles tracking of satellites and orbiting bodies from given geolocations.
     """
 

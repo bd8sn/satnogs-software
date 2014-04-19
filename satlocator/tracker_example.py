@@ -2,7 +2,7 @@
 """ An example of usage for the pinpointing functionality of the tracker module.
 """
 
-import tracker
+import orbitaltracker
 from datetime import datetime
 import time
 import trackersocket
@@ -40,7 +40,7 @@ def main():
     observer = HSGR_COORDS
     sat_tle_dict = SEDSAT1_TLE
     # tracker init
-    tr = tracker.tracker()
+    tr = orbitaltracker.orbitaltracker()
     tr.add_station('hsgr', observer['lat'], observer['lon'], observer['elev'])
     tr.add_satellite_from_tle(sat_tle_dict, '0 SEDSAT 1')
 
