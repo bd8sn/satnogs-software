@@ -22,6 +22,13 @@ def get_observer(observer_name):
     return result
 
 
+def del_observer(observer_name):
+    """ Removes an observer by name.
+    """
+    result = dataio_backend.del_observer(observer_name)
+    return result
+
+
 def get_observer_list():
     """ Retrieves all observers.
     """
@@ -40,6 +47,13 @@ def get_satellite(satellite_name):
     """ Retrieves a satellite.
     """
     result = dataio_backend.get_satellite(satellite_name)
+    return result
+
+
+def del_satellite(satellite_name):
+    """ Removes a satellite.
+    """
+    result = dataio_backend.del_satellite(satellite_name)
     return result
 
 

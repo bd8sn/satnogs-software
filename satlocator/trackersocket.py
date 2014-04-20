@@ -10,7 +10,11 @@ class trackersocket:
 
     connected = False
 
-    def __init__(self):
+    def __init__(self, ip=None, port=None):
+        if ip is not None:
+            self.TCP_IP = ip
+        if port is not None:
+            self.TCP_PORT = port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self, ip=None, port=None):
@@ -30,7 +34,7 @@ class trackersocket:
             self.connect()
         self.s.send(message)
         data = self.s.recv(self.BUFFER_SIZE)
-        print data
+        print(data)
 
     def disconnect(self):
         self.s.close()
