@@ -66,7 +66,7 @@ Lists all satellites in the application database.
 
 Returns azimuth, altitude, distance and velocity of satellite entered in database with friendly name "ISS" from observation point with friendly name "hsgr".
 
-`http://localhost:8001/get_windows/hsgr/ISS`
+`http://localhost:8001/window/list/hsgr/ISS`
 
 Provides observation windows available of satellite entered in database with friendly name "ISS" from observation point with friendly name "hsgr". Default maximum window is next 48 hours, but API endpoint can accept two more parameters with starting timestamp and ending timestamp.
 
