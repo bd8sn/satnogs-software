@@ -21,7 +21,7 @@ class TrackerWorker():
     _stay_alive = False
 
     # debug flag
-    _debugmode = True
+    _debugmode = False
 
     observer_dict = {}
     satellite_dict = {}
