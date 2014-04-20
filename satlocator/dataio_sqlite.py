@@ -70,6 +70,12 @@ def set_observer(observer):
     # create entry
     entry = (name, lat, lon, elev)
     c = _cursor()
+    # check if obserer exists and this is a redefinition
+    c.execute("SELECT * FROM obserer WHERE name=?", (name,))
+    if c.fetchall() != ():
+        # if entry exists, delete it
+        c.execute("DELETE FROM obserer WHERE name=?", (name,))
+    # insert obserer entry
     c.execute('INSERT INTO observer VALUES (?,?,?,?)', entry)  # TODO: add try/except
     return True
 
@@ -117,6 +123,12 @@ def set_satellite(satellite):
     # create entry
     entry = (name, norad_id, tle0, tle1, tle2)
     c = _cursor()
+    # check if satellite exists and this is a redefinition
+    c.execute("SELECT * FROM satellite WHERE name=?", (name,))
+    if c.fetchall() != ():
+        # if entry exists, delete it
+        c.execute("DELETE FROM satellite WHERE name=?", (name,))
+    # insert satellite entry
     c.execute('INSERT INTO satellite VALUES (?,?,?,?,?)', entry)  # TODO: add try/except
     return {'ok': True}
 
