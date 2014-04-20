@@ -14,7 +14,7 @@ def _cursor():
     conn = sqlite3.connect(cfg.SQLITE_DATABASE_NAME)
     conn.isolation_level = None  # should be concious of this
     cursor = conn.cursor()
-    #_define_schema(cursor)
+    _define_schema(cursor)
     return cursor
 
 
