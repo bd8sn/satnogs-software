@@ -42,9 +42,9 @@ def pinpoint(observer_dict, satellite_dict, timestamp=None):
 
     # satellite object
     if 'tle0' in satellite_dict and 'tle1' in satellite_dict and 'tle2' in satellite_dict:
-        tle0 = satellite_dict['tle0']
-        tle1 = satellite_dict['tle1']
-        tle2 = satellite_dict['tle2']
+        tle0 = str(satellite_dict['tle0'])
+        tle1 = str(satellite_dict['tle1'])
+        tle2 = str(satellite_dict['tle2'])
         try:
             satellite = ephem.readtle(tle0, tle1, tle2)
         except ValueError:

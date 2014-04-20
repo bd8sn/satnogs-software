@@ -251,13 +251,13 @@ def pinpoint(observer_name, satellite_name):
         Only names are provided as params,
         they are subsequently searched in their respectable lists.
     """
-    o_result = dataio.observer_get(observer_name)
+    o_result = dataio.get_observer(observer_name)
     if o_result['ok']:
         o = o_result['results'][0]
     else:
         return {'error': 'observer not found'}
 
-    s_result = dataio.satellite_get(satellite_name)
+    s_result = dataio.get_satellite(satellite_name)
     if o_result['ok']:
         s = s_result['results'][0]
     else:
