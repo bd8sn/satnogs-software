@@ -246,7 +246,10 @@ def schedule_list():
 # get pinpoint for given observer and satellite
 @route('/pinpoint/:observer_name/:satellite_name')
 def pinpoint(observer_name, satellite_name):
-    """
+    """ Returns azimuth and altitude of satellite from observer.
+
+        Only names are provided as params,
+        they are subsequently searched in their respectable lists.
     """
     o_result = dataio.observer_get(observer_name)
     if o_result['ok']:
@@ -267,7 +270,8 @@ def pinpoint(observer_name, satellite_name):
 # get pinpoint for current observer and satellite
 @route('/pinpoint/current')
 def pinpoint_current():
-    """
+    """ Returns azimuth and altitude of currently selected satellite
+        from currently selected observer.
     """
     observer_name = current_observer_get()
     satellite_name = current_satellite_get()
@@ -290,13 +294,16 @@ def get_windows(observer_name, satellite_name, date_start=None, date_end=None):
 # post track directive to tracker worker api
 @route('/track/:observer_name/:satellite_name')
 def track(observer_name, satellite_name):
-    """ Requests to start tracking satellite.
+    """ Requests satellite tracking initiation.
+
+        Tracking request is handled by the tracker worker api.
     """
     # TODO: check if they exist
     observer = observer_get(observer_name)
     satellite = satellite_get(satellite_name)
     url = 'http://' + TRACKER_WORKER_API_IP + ':' + TRACKER_WORKER_API_PORT + '/'
-    url += observer + '/' + satellite
+    url += str(observer) + '/' + str(satellite)
+    print url  # debug
     r = requests.get(url)
     return r.text
 
@@ -313,7 +320,9 @@ def track_stop():
 # post track directive to tracker worker api
 @route('/track/current')
 def track_current():
-    """ Requests to start tracking satellite.
+    """ Requests to stop satellite tracking.
+
+        Tracking request is handled by track() and subsequently by the tracker worker api.
     """
     observer_name = current_observer_get()
     satellite_name = current_satellite_get()
@@ -357,6 +366,7 @@ def current_satellite_get():
     res = dataio.get_current_satellite()
     return res
 
+# this allows the module to be started without gunicorn, via bottle
 if __name__ == "__main__":
     run(host='localhost', port=8000, reloader=True)
 
