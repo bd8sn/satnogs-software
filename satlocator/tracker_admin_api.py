@@ -251,13 +251,13 @@ def pinpoint(observer_name, satellite_name):
         Only names are provided as params,
         they are subsequently searched in their respectable lists.
     """
-    o_result = dataio.observer_get(observer_name)
+    o_result = dataio.get_observer(observer_name)
     if o_result['ok']:
         o = o_result['results'][0]
     else:
         return {'error': 'observer not found'}
 
-    s_result = dataio.satellite_get(satellite_name)
+    s_result = dataio.get_satellite(satellite_name)
     if o_result['ok']:
         s = s_result['results'][0]
     else:
@@ -279,8 +279,21 @@ def pinpoint_current():
 
 
 # get visibility windows
+@route('/window/list/:observer_name/:satellite_name')
+def get_windows(observer_name, satellite_name):
+    """ Returns a list of all visibility windows of given satellite from given observer.
+    """
+    # TODO: check if they exist
+    observer = observer_get(observer_name)
+    satellite = satellite_get(satellite_name)
+    # calculate windows
+    res = orbital.calculate_windows(observer, satellite)
+    return res
+
+
+# get visibility windows
 @route('/window/list/:observer_name/:satellite_name/:date_start/:date_end')
-def get_windows(observer_name, satellite_name, date_start=None, date_end=None):
+def get_windows_with_limits(observer_name, satellite_name, date_start=None, date_end=None):
     """ Returns a list of all visibility windows of given satellite from given observer.
     """
     # TODO: check if they exist
