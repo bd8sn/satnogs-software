@@ -11,8 +11,8 @@
 
     Usage:
         gunicorn --workers 2 --log-level INFO tracker_api:app
-        gunicorn --workers 2 --log-level INFO --worker-class gevent --bind 127.0.0.1:8002 tracker_api:app
-        gunicorn --workers 2 --daemon --log-level INFO --worker-class gevent --bind 127.0.0.1:8002 tracker_api:app
+        gunicorn --workers 2 --log-level INFO --worker-class gevent --bind 127.0.0.1:8001 tracker_api:app
+        gunicorn --workers 2 --daemon --log-level INFO --worker-class gevent --bind 127.0.0.1:8001 tracker_api:app
 
     Help:
         gunicorn --help
@@ -368,6 +368,6 @@ def current_satellite_get():
 
 # this allows the module to be started without gunicorn, via bottle
 if __name__ == "__main__":
-    run(host='localhost', port=8000, reloader=True)
+    run(host='localhost', port=8001, reloader=True)
 
 app = bottle.default_app()
