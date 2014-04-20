@@ -44,12 +44,41 @@ Alternatively, it can be called simply via python:
 
 example functionality provided:
 
-`http://localhost:8001/observer/add/`
+`http://localhost:8001/observer/add/hsgr/38.017120/23.731230/132`
 
+Adds a new observation point in the application database.
+
+`http://localhost:8001/satellite/add/ISS/38.017120/23.731230/132`
+
+Retrieves the TLE information of the norad_id provided and adds the satellite in the application database.
+
+`http://localhost:8001/observer/list`
+
+Lists all observation points in the application database.
+
+`http://localhost:8001/satellite/list`
+
+Lists all satellites in the application database.
+
+`http://localhost:8001/pinpoint/hsgr/ISS`
+
+Returns azimuth, altitude, distance and velocity of satellite entered in database with friendly name "ISS" from observation point with friendly name "hsgr".
+
+`http://localhost:8001/get_windows/hsgr/ISS`
+
+Provides observation windows available of satellite entered in database with friendly name "ISS" from observation point with friendly name "hsgr". Default maximum window is next 48 hours, but API endpoint can accept two more parameters with starting timestamp and ending timestamp.
+
+`http://localhost:8001/track/hsgr/ISS`
+
+Tracks satellite entered in database with friendly name "ISS" from observation point with friendly name "hsgr" and sends tracking directions to antenna via the tracker worker API.
+
+`http://localhost:8001/track/stop`
+
+Directs application to seize tracking.
 
 Also, 
 
-`http://localhost:8001/observer/add/`
+`http://localhost:8001/admin`
 
 should provide a web interface for easier usage of the API.
 
@@ -75,5 +104,14 @@ and it's accessible through a dead simple web api:
 
 example:
 
-`http://localhost:8002/`
+`http://localhost:8002/track/{"lat":38.017120,"lon":23.731230,"elev":132}/{"tle0":"0 ISS (ZARYA)","tle1":"1 25544U 98067A   14103.32235382  .00083249  00000-0  14653-2 0   726","tle2":"2 25544 051.6474 061.0213 0003735 283.8131 171.7524 15.49723829881268"`
 
+directs the tracker to calculate the trajectory of the satellite whose TLE we provide when observed from the observation point of the first parameter, and start sending azimuth and altitude commands to the receiver of the antenna.
+
+Can be called again with other parameters, to start tracking another object.
+
+Dictionaries are required to have double quotes around string ("") and NOT single quotes ('').
+
+`http://localhost:8002/track/stop`
+
+Stops the tracker.
