@@ -48,7 +48,7 @@ example functionality provided:
 
 Adds a new observation point in the application database.
 
-`http://localhost:8001/satellite/add/ISS/38.017120/23.731230/132`
+`http://localhost:8001/satellite/add/ISS/25544`
 
 Retrieves the TLE information of the norad_id provided and adds the satellite in the application database.
 
