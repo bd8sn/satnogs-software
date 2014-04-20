@@ -312,20 +312,28 @@ def track(observer_name, satellite_name):
         Tracking request is handled by the tracker worker api.
     """
     # TODO: check if they exist
-    observer = observer_get(observer_name)
-    satellite = satellite_get(satellite_name)
-    url = 'http://' + TRACKER_WORKER_API_IP + ':' + TRACKER_WORKER_API_PORT + '/'
-    url += str(observer) + '/' + str(satellite)
-    print url  # debug
+    observer = observer_get(observer_name)['results'][0]
+    satellite = satellite_get(satellite_name)['results'][0]
+    url = 'http://' + TRACKER_WORKER_API_IP + ':' + str(TRACKER_WORKER_API_PORT) + '/'
+    url += 'track' + '/' + _sanitise_string(str(observer)) + '/'
+    url += _sanitise_string(str(satellite))
     r = requests.get(url)
     return r.text
+
+
+def _sanitise_string(string):
+    """ Transforms string representations of dictionaries into desires string format.
+    """
+    string = string.replace('\'', '\"')
+    string = string.replace(': u\"', ': \"')
+    return string
 
 
 # post track directive to tracker worker api
 @route('/track/stop')
 def track_stop():
-    url = 'http://' + TRACKER_WORKER_API_IP + ':' + TRACKER_WORKER_API_PORT + '/'
-    url += 'track_stop'
+    url = 'http://' + TRACKER_WORKER_API_IP + ':' + str(TRACKER_WORKER_API_PORT) + '/'
+    url += 'track/stop'
     r = requests.get(url)
     return r.text
 
