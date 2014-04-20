@@ -155,6 +155,8 @@ def calculate_windows(observer_dict, satellite_dict, time_start=None, time_end=N
 
 
 def _check_window_sanity(window):
+    """ Helps with detecting weird pyephem next_pass() results, where the set is before rise.
+    """
     if ephem.Date(window[0]).datetime() > ephem.Date(window[4]).datetime():
         print(window)
         return False
