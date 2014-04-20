@@ -71,10 +71,10 @@ def set_observer(observer):
     entry = (name, lat, lon, elev)
     c = _cursor()
     # check if obserer exists and this is a redefinition
-    c.execute("SELECT * FROM obserer WHERE name=?", (name,))
+    c.execute("SELECT * FROM observer WHERE name=?", (name,))
     if c.fetchall() != ():
         # if entry exists, delete it
-        c.execute("DELETE FROM obserer WHERE name=?", (name,))
+        c.execute("DELETE FROM observer WHERE name=?", (name,))
     # insert obserer entry
     c.execute('INSERT INTO observer VALUES (?,?,?,?)', entry)  # TODO: add try/except
     return True
@@ -179,14 +179,18 @@ def set_schedule_slot(slot):
     entry = (date_start, date_end, observer, satellite, owner)
     c = _cursor()
     c.execute('INSERT INTO schedule VALUES (?,?,?,?,?)', entry)  # TODO: add try/except
-    return True
+    return {'ok': True}
 
 
-def del_schedule_slot(date_start):
+def del_schedule_slot(slot):
     """ Deletes a schedule reservation.
     """
+    date_start = slot['date_start']
+    observer = slot['observer']
+    owner = slot['owner']
     if get_schedule_slot(date_start) is not []:
         c = _cursor()
+        # TODO: delete with 3 attributes
         c.execute("DELETE FROM schedule where date_start=?", (date_start,))
         return True
     else:
