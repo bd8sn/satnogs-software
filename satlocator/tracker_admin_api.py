@@ -18,11 +18,15 @@
         gunicorn --help
 """
 import bottle
-from bottle import route, error, post, get, run, abort, redirect, response, request, template
+from bottle import route, run  # , error, post, get, abort, redirect, response, request, template
 import dataio
 import spacetrack
+import orbital
+import requests
 from tracker_config import SPACETRACK_USERNAME
 from tracker_config import SPACETRACK_PASSWORD
+from tracker_config import TRACKER_WORKER_API_IP
+from tracker_config import TRACKER_WORKER_API_PORT
 
 
 @route('/hello')
@@ -123,10 +127,16 @@ def satellite_define(name, norad_id):
 
 # post satellite definition, with TLE info
 @route('/satellite/add_with_tle/:name/:norad_id/:tle0/:tle1/:tle2')
-def satellite_define_with_TLE(name, tle0, tle1, tle2):
+def satellite_define_with_TLE(name, norad_id, tle0, tle1, tle2):
     """ Defines an satellite.
     """
-    return {'error': 'not implemented yet.'}
+    satellite = {'name': name, 'norad_id': norad_id,
+                'tle0': tle0, 'tle1': tle1, 'tle2': tle2}
+    result = dataio.set_satellite(satellite)
+    if result['ok']:
+        return result
+    else:
+        return result['error']
 
 
 # request an update of specified satellite TLE info from SpaceTrack
@@ -134,7 +144,19 @@ def satellite_define_with_TLE(name, tle0, tle1, tle2):
 def satellite_update_TLE(name):
     """ Updates satellite TLE.
     """
-    return {'error': 'not implemented yet.'}
+    sat_def = satellite_get(name)
+    if not sat_def['ok']:
+        return {'error': 'not found'}
+    else:
+        norad_id = sat_def['results'][0]['norad_id']
+        tle = satellite_get_tle(norad_id)
+        satellite = {'name': name, 'norad_id': norad_id,
+                    'tle0': tle['tle0'], 'tle1': tle['tle1'], 'tle2': tle['tle2']}
+        result = dataio.set_satellite(satellite)
+        if result['ok']:
+            return result
+        else:
+            return result['error']
 
 
 # post satellite deletion
@@ -183,17 +205,29 @@ def get_schedule_slot_availability(date_start, date_end):
 
 # post slot reservation
 @route('/schedule/request/:date_start/:date_end/:observer/:satellite/:owner')
-def schedule_request(name):
+def schedule_request(date_start, date_end, observer, satellite, owner):
     """ Requests a schedule slot.
     """
-    return {'error': 'not implemented yet.'}
+    slot = {'date_start': date_start, 'date_end': date_end, 'observer': observer,
+            'satellite': satellite, 'owner': owner}
+    result = dataio.set_schedule_slot(slot)
+    if result['ok']:
+        return result
+    else:
+        return result['error']
 
 
 # post slot deletion
-@route('/schedule/request/:date_start/:date_end/:observer/:satellite/:owner')
-def schedule_delete(date_start, observer):
+@route('/schedule/remove/:date_start/:date_end/:observer/:satellite/:owner')
+def schedule_delete(date_start, observer, owner):
     """ Requests a schedule slot.
     """
+#    slot = {'date_start': date_start, 'observer': observer, 'owner': owner}
+#    result = dataio.set_schedule_slot(slot)
+#    if result['ok']:
+#        return result
+#    else:
+#        return result['error']
     return {'error': 'not implemented yet.'}
 
 
@@ -202,31 +236,88 @@ def schedule_delete(date_start, observer):
 def schedule_list():
     """
     """
-    return {'error': 'not implemented yet.'}
+    result = dataio.get_schedule_list()
+    if result['ok']:
+        return result
+    else:
+        return result['error']
 
 
-# get pinpoint
-@route('/pinpoint')
-def pinpoint():
+# get pinpoint for given observer and satellite
+@route('/pinpoint/:observer_name/:satellite_name')
+def pinpoint(observer_name, satellite_name):
     """
     """
-    return {'error': 'not implemented yet.'}
+    o_result = dataio.observer_get(observer_name)
+    if o_result['ok']:
+        o = o_result['results'][0]
+    else:
+        return {'error': 'observer not found'}
+
+    s_result = dataio.satellite_get(satellite_name)
+    if o_result['ok']:
+        s = s_result['results'][0]
+    else:
+        return {'error': 'satellite not found'}
+
+    result = orbital.pinpoint(o, s)
+    return result
+
+
+# get pinpoint for current observer and satellite
+@route('/pinpoint/current')
+def pinpoint_current():
+    """
+    """
+    observer_name = current_observer_get()
+    satellite_name = current_satellite_get()
+    return pinpoint(observer_name, satellite_name)
 
 
 # get visibility windows
-@route('/window/list/:observer/:satellite/:date_start/:date_end')
-def get_windows(observer, satellite, date_start=None, date_end=None):
+@route('/window/list/:observer_name/:satellite_name/:date_start/:date_end')
+def get_windows(observer_name, satellite_name, date_start=None, date_end=None):
     """ Returns a list of all visibility windows of given satellite from given observer.
     """
-    return {'error': 'not implemented yet.'}
+    # TODO: check if they exist
+    observer = observer_get(observer_name)
+    satellite = satellite_get(satellite_name)
+    # calculate windows
+    res = orbital.calculate_windows(observer, satellite, date_start, date_end)
+    return res
 
 
 # post track directive to tracker worker api
-@route('/track/:observer/:satellite')
-def track(observer, satellite):
+@route('/track/:observer_name/:satellite_name')
+def track(observer_name, satellite_name):
     """ Requests to start tracking satellite.
     """
-    return {'error': 'not implemented yet.'}
+    # TODO: check if they exist
+    observer = observer_get(observer_name)
+    satellite = satellite_get(satellite_name)
+    url = 'http://' + TRACKER_WORKER_API_IP + ':' + TRACKER_WORKER_API_PORT + '/'
+    url += observer + '/' + satellite
+    r = requests.get(url)
+    return r.text
+
+
+# post track directive to tracker worker api
+@route('/track/stop')
+def track_stop():
+    url = 'http://' + TRACKER_WORKER_API_IP + ':' + TRACKER_WORKER_API_PORT + '/'
+    url += 'track_stop'
+    r = requests.get(url)
+    return r.text
+
+
+# post track directive to tracker worker api
+@route('/track/current')
+def track_current():
+    """ Requests to start tracking satellite.
+    """
+    observer_name = current_observer_get()
+    satellite_name = current_satellite_get()
+    return track(observer_name, satellite_name)
 
 
 # post current observer
@@ -234,7 +325,9 @@ def track(observer, satellite):
 def current_observer_set(observer):
     """ Sets observer to be loaded in application.
     """
-    return {'error': 'not implemented yet.'}
+    # TODO: Check if in list
+    res = dataio.set_current_observer(observer)
+    return res
 
 
 # get current observer
@@ -242,15 +335,18 @@ def current_observer_set(observer):
 def current_observer_get():
     """ Returns observer currently loaded in application.
     """
-    return {'error': 'not implemented yet.'}
+    res = dataio.get_current_observer()
+    return res
 
 
 # post current satellite
 @route('/current/satellite/:satellite')
-def current_satellite_set(observer):
+def current_satellite_set(satellite):
     """ Sets satellite to be loaded in application.
     """
-    return {'error': 'not implemented yet.'}
+    # TODO: Check if in list
+    res = dataio.set_current_satellite(satellite)
+    return res
 
 
 # get current satellite
@@ -258,8 +354,8 @@ def current_satellite_set(observer):
 def current_satellite_get():
     """ Returns satellite currently loaded in application.
     """
-    return {'error': 'not implemented yet.'}
-
+    res = dataio.get_current_satellite()
+    return res
 
 if __name__ == "__main__":
     run(host='localhost', port=8000, reloader=True)
