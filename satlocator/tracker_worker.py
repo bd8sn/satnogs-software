@@ -43,13 +43,13 @@ class TrackerWorker():
         """ Sets tracking object.
             Can also be called while tracking, to manipulate observation.
         """
-        if self._debugmode:
-            print type(observer_dict), observer_dict
-            print type(satellite_dict), satellite_dict
+        #if self._debugmode:
+        #    print type(observer_dict), observer_dict
+        #    print type(satellite_dict), satellite_dict
         self.observer_dict = json.loads(observer_dict)
         self.satellite_dict = json.loads(satellite_dict)
-        if self._debugmode:
-            print(('observer:', self.observer_dict, 'satellite:', self.satellite_dict))
+        #if self._debugmode:
+        #    print(('observer:', self.observer_dict, 'satellite:', self.satellite_dict))
 
     def trackstart(self):
         """ Starts the thread that communicates tracking info to remote socket.
@@ -78,8 +78,8 @@ class TrackerWorker():
         # track satellite
         while self._stay_alive:
             if self._debugmode:
-                print type(self.observer_dict), self.observer_dict
-                print type(self.satellite_dict), self.satellite_dict
+                #print type(self.observer_dict), self.observer_dict
+                #print type(self.satellite_dict), self.satellite_dict
                 print(('Tracking', self.satellite_dict['tle0'], 'from', self.observer_dict['elev']))
             else:
                 p = orbital.pinpoint(self.observer_dict, self.satellite_dict)
