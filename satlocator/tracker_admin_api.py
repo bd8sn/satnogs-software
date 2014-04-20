@@ -19,22 +19,23 @@
 """
 import bottle
 from bottle import route, error, post, get, run, abort, redirect, response, request, template
+import dataio
 
 
-@get('/hello')
+@route('/hello')
 def hello():
     """ Being friendly.
     """
     return {"hello": "I am alive."}
 
 
-@get('/admin')
+@route('/admin')
 def admin():
     return {"admin": "area"}  # needs proper template to render all functionality output
 
 
 # post observer definition
-@post('/observer/add/:name/:lat/:lon/:elevation')
+@route('/observer/add/:name/:lat/:lon/:elevation')
 def observer_define(name, lat, lon, elevation):
     """ Defines an observer point.
     """
@@ -42,7 +43,7 @@ def observer_define(name, lat, lon, elevation):
 
 
 # post observer deletion
-@post('/observer/remove/:name')
+@route('/observer/remove/:name')
 def observer_delete(name):
     """ Deletes an observer point.
     """
@@ -50,31 +51,47 @@ def observer_delete(name):
 
 
 # get observer list
-@get('/observer/list')
+@route('/observer/list')
 def observer_get_list():
     """ Returns all registered observer points.
     """
     return {"": ""}
 
 
-# post satellite definition
-@post('/satellite/add/:name/:norad_id/:tle0/:tle1/:tle2')
-def satellite_define(name, tle0, tle1, tle2):
-    """ Defines an satellite.
-    """
-    return {"": ""}
-
-
 # get satellite definition
-@get('/satellite/get_tle/:norad_id')
+@route('/satellite/get_tle_for/:norad_id')
 def satellite_get_tle(norad_id):
     """ Gets the most recent TLE of the satellite.
     """
     return {"": ""}
 
 
+# post satellite definition, without TLE info
+@route('/satellite/add/:name/:norad_id')
+def satellite_define(name, tle0, tle1, tle2):
+    """ Defines an satellite. TLE info is retrieved from SpaceTrack.
+    """
+    return {"": ""}
+
+
+# post satellite definition
+@route('/satellite/add_with_tle/:name/:norad_id/:tle0/:tle1/:tle2')
+def satellite_define_with_TLE(name, tle0, tle1, tle2):
+    """ Defines an satellite.
+    """
+    return {"": ""}
+
+
+# request satellite TLE update from SpaceTrack
+@route('/satellite/update_tle/:name')
+def satellite_update_TLE(name):
+    """ Defines an satellite.
+    """
+    return {"": ""}
+
+
 # post satellite deletion
-@post('/satellite/remove/:name')
+@route('/satellite/remove/:name')
 def satellite_delete(name):
     """ Deletes an satellite.
     """
@@ -82,7 +99,7 @@ def satellite_delete(name):
 
 
 # get satellite list
-@get('/satellite/list')
+@route('/satellite/list')
 def get_satellite_list():
     """ Returns all registered satellites.
     """
@@ -90,7 +107,7 @@ def get_satellite_list():
 
 
 # get slot availability
-@get('/schedule/availability/:date_start/:date_end')
+@route('/schedule/availability/:date_start/:date_end')
 def get_schedule_slot_availability(date_start, date_end):
     """ Returns schedule slot availability
     """
@@ -98,7 +115,7 @@ def get_schedule_slot_availability(date_start, date_end):
 
 
 # post slot reservation
-@post('/schedule/request/:date_start/:date_end/:observer/:satellite/:owner')
+@route('/schedule/request/:date_start/:date_end/:observer/:satellite/:owner')
 def schedule_request(name):
     """ Requests a schedule slot.
     """
@@ -106,7 +123,7 @@ def schedule_request(name):
 
 
 # post slot deletion
-@post('/schedule/request/:date_start/:date_end/:observer/:satellite/:owner')
+@route('/schedule/request/:date_start/:date_end/:observer/:satellite/:owner')
 def schedule_delete(date_start, observer):
     """ Requests a schedule slot.
     """
@@ -114,7 +131,7 @@ def schedule_delete(date_start, observer):
 
 
 # get slot list
-@get('/schedule/list')
+@route('/schedule/list')
 def schedule_list():
     """
     """
@@ -122,7 +139,7 @@ def schedule_list():
 
 
 # get pinpoint
-@get('/pinpoint')
+@route('/pinpoint')
 def pinpoint():
     """
     """
@@ -130,15 +147,15 @@ def pinpoint():
 
 
 # get visibility windows
-@get('/window/list/:observer/:satellite/:date_start/:date_end')
+@route('/window/list/:observer/:satellite/:date_start/:date_end')
 def get_windows(observer, satellite, date_start=None, date_end=None):
     """ Returns a list of all visibility windows of given satellite from given observer.
     """
     return {"": ""}
 
 
-# post track  # will need some bottle magic!
-@post('/track/:observer/:satellite')
+# post track directive to tracker worker api
+@route('/track/:observer/:satellite')
 def track(observer, satellite):
     """ Requests to start tracking satellite.
     """
@@ -146,7 +163,7 @@ def track(observer, satellite):
 
 
 # post current observer
-@post('/current/observer/:observer')
+@route('/current/observer/:observer')
 def current_observer_set(observer):
     """ Sets observer to be loaded in application.
     """
@@ -154,7 +171,7 @@ def current_observer_set(observer):
 
 
 # get current observer
-@get('/current/observer')
+@route('/current/observer')
 def current_observer_get():
     """ Returns observer currently loaded in application.
     """
@@ -162,7 +179,7 @@ def current_observer_get():
 
 
 # post current satellite
-@post('/current/satellite/:satellite')
+@route('/current/satellite/:satellite')
 def current_satellite_set(observer):
     """ Sets satellite to be loaded in application.
     """
@@ -170,7 +187,7 @@ def current_satellite_set(observer):
 
 
 # get current satellite
-@get('/current/satellite')
+@route('/current/satellite')
 def current_satellite_get():
     """ Returns satellite currently loaded in application.
     """
