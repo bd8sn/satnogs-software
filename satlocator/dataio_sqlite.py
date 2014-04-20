@@ -71,6 +71,7 @@ def set_observer(observer):
     entry = (name, lat, lon, elev)
     c = _cursor()
     c.execute('INSERT INTO observer VALUES (?,?,?,?)', entry)  # TODO: add try/except
+    return True
 
 
 def get_observer(observer_name):
@@ -80,6 +81,19 @@ def get_observer(observer_name):
     c.execute("SELECT * FROM observer WHERE name=?", (observer_name,))
     rows = c.fetchall()
     return _list2dict('observer', rows)
+
+
+def del_observer(observer_name):
+    """ Removes an observer by name.
+    """
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT * FROM observer WHERE name=?", (observer_name,))
+    rows = c.fetchall()
+    if rows != ():
+        c.execute("DELETE FROM observer WHERE name=?", (observer_name,))
+        return {'ok': True}
+    else:
+        return {'error': 'not found'}
 
 
 def get_observer_list():
@@ -104,6 +118,7 @@ def set_satellite(satellite):
     entry = (name, norad_id, tle0, tle1, tle2)
     c = _cursor()
     c.execute('INSERT INTO satellite VALUES (?,?,?,?,?)', entry)  # TODO: add try/except
+    return {'ok': True}
 
 
 def get_satellite(satellite_name):
@@ -113,6 +128,19 @@ def get_satellite(satellite_name):
     c.execute("SELECT * FROM satellite WHERE name=?", (satellite_name,))
     rows = c.fetchall()
     return _list2dict('satellite', rows)
+
+
+def del_satellite(satellite_name):
+    """ Removes an observer by name.
+    """
+    c = _cursor()  # with _cursor() as c:
+    c.execute("SELECT * FROM satellite WHERE name=?", (satellite_name,))
+    rows = c.fetchall()
+    if rows != ():
+        c.execute("DELETE FROM satellite WHERE name=?", (satellite_name,))
+        return {'ok': True}
+    else:
+        return {'error': 'not found'}
 
 
 def get_satellite_list():

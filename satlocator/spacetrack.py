@@ -60,10 +60,10 @@ def _valid_credentials(credentials):
     return False
 
 
-def request_sequence(credentials, norad_id=None, payload=None):
+def request_sequence(credentials, norad_id=None, spacetrack_query=None):
     """ Handles a complete login, request, logout cycle and returns full TLE json.
     """
     cookie = login(credentials=credentials)
-    r = request(cookie, norad_id, payload=payload)
+    r = request(cookie, norad_id, spacetrack_query=spacetrack_query)
     logout(cookie)
-    return r.json()
+    return r
