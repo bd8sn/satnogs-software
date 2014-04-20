@@ -19,20 +19,26 @@
 """
 import bottle
 
-import orbital
+import tracker_worker
 
 
 class WorkerApp(object):
+
+    tracker = None
+
     def __init__(self):
-        pass
+        self.tracker = tracker_worker.TrackerWorker()
 
-    def track(self, observer, satellite):
-
-        return("I'm 1 | self.param = %s" % self.param)
+    def track(self, observer_dict, satellite_dict):
+        self.tracker.trackobject(observer_dict, satellite_dict)
+        if not self.tracker.isalive:
+            self.tracker.trackstart()
+        return("Tracking.")
 
     def track_stop(self):
+        self.tracker.trackstop()
         return("Tracking stopped.")
 
 myapp = WorkerApp()
-bottle.route("/track/:observer/:satellite")(myapp.track)
+bottle.route("/track/:observer_dict/:satellite_dict")(myapp.track)
 bottle.route("/track_stop")(myapp.track_stop)

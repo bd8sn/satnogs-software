@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 import sys
 
 
-def pinpoint(self, observer_dict, satellite_dict, timestamp=None):
+def pinpoint(observer_dict, satellite_dict, timestamp=None):
     """ Provides azimuth and altitude of tracked object.
 
         Args:
@@ -68,7 +68,7 @@ def pinpoint(self, observer_dict, satellite_dict, timestamp=None):
             'ok': True}
 
 
-def calculate_windows(self, observer_dict, satellite_dict, time_start=None, time_end=None):
+def calculate_windows(observer_dict, satellite_dict, time_start=None, time_end=None):
     """ Calculates windows of visibility of a satellite from an observation point.
 
         Args:
@@ -154,7 +154,7 @@ def calculate_windows(self, observer_dict, satellite_dict, time_start=None, time
     return windows
 
 
-def _check_window_sanity(self, window):
+def _check_window_sanity(window):
     if ephem.Date(window[0]).datetime() > ephem.Date(window[4]).datetime():
         print(window)
         return False
