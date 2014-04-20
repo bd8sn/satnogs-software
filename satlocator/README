@@ -42,6 +42,8 @@ Alternatively, it can be called simply via python:
 
 `python tracker_admin_api.py`
 
+NOTE: In order to make calls to SpaceTrack API, you need to add proper credentials for it in tracker_config.py!
+
 example functionality provided:
 
 `http://localhost:8001/observer/add/hsgr/38.017120/23.731230/132`
