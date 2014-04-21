@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """ Original OO implementation of orbital tracking functionality.
 """
+""" out of date. watch for this notice disappearing.
+"""
 import ephem
 from datetime import datetime, timedelta
 import time

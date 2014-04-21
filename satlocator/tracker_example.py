@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """ An example of usage for the pinpointing functionality of the tracker module.
 """
-
+""" out of date. watch for this notice disappearing.
+"""
 import orbitaltracker
 from datetime import datetime
 import time
