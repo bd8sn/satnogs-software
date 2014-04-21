@@ -94,9 +94,9 @@ def calculate_windows(observer_dict, satellite_dict, time_start=None, time_end=N
 
     # satellite object
     if 'tle0' in satellite_dict and 'tle1' in satellite_dict and 'tle2' in satellite_dict:
-        tle0 = satellite_dict['tle0']
-        tle1 = satellite_dict['tle1']
-        tle2 = satellite_dict['tle2']
+        tle0 = str(satellite_dict['tle0'])
+        tle1 = str(satellite_dict['tle1'])
+        tle2 = str(satellite_dict['tle2'])
         try:
             satellite = ephem.readtle(tle0, tle1, tle2)
         except ValueError:
@@ -136,8 +136,8 @@ def calculate_windows(observer_dict, satellite_dict, time_start=None, time_end=N
         if ephem.Date(window[0]).datetime() < time_end:
             windows['windows'].append(
                 {
-                    'start': ephem.Date(window[0]).datetime(),
-                    'end': ephem.Date(window[4]).datetime(),
+                    'start': ephem.Date(window[0]).datetime().strftime("%Y-%m-%d %H:%M:%S.%f"),
+                    'end': ephem.Date(window[4]).datetime().strftime("%Y-%m-%d %H:%M:%S.%f"),
                     'az_start': window[1]
                 })
             if ephem.Date(window[4]).datetime() > time_end:
@@ -158,6 +158,6 @@ def _check_window_sanity(window):
     """ Helps with detecting weird pyephem next_pass() results, where the set is before rise.
     """
     if ephem.Date(window[0]).datetime() > ephem.Date(window[4]).datetime():
-        print(window)
+        # print(window)
         return False
     return True

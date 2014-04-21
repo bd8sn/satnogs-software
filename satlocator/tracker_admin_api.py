@@ -284,8 +284,8 @@ def get_windows(observer_name, satellite_name):
     """ Returns a list of all visibility windows of given satellite from given observer.
     """
     # TODO: check if they exist
-    observer = observer_get(observer_name)
-    satellite = satellite_get(satellite_name)
+    observer = observer_get(observer_name)['results'][0]
+    satellite = satellite_get(satellite_name)['results'][0]
     # calculate windows
     res = orbital.calculate_windows(observer, satellite)
     return res
@@ -297,8 +297,8 @@ def get_windows_with_limits(observer_name, satellite_name, date_start=None, date
     """ Returns a list of all visibility windows of given satellite from given observer.
     """
     # TODO: check if they exist
-    observer = observer_get(observer_name)
-    satellite = satellite_get(satellite_name)
+    observer = observer_get(observer_name)['results'][0]
+    satellite = satellite_get(satellite_name)['results'][0]
     # calculate windows
     res = orbital.calculate_windows(observer, satellite, date_start, date_end)
     return res
