@@ -80,12 +80,17 @@ def calculate_azimuth_elevation(pointA, pointB):
 
 
 def _test_calculate_azimuth_elevation():
+    """ Simple test case for calculate_azimuth_elevation function.
+    """
     pointA = 37.6454331, 24.1062927, 10
     pointB = 37.6454333, 24.3085681, 30000
     print((calculate_azimuth_elevation(pointA, pointB)))
 
 
 def grab_stdin():
+    """ Grabs input from stdin and if it recognises a desired callsign,
+        points the antenna to its location.
+    """
     for line in sys.stdin:
         #print 'input was:',line
         callsign = is_interesting_aprs_packet(line)
@@ -108,6 +113,8 @@ def is_interesting_aprs_packet(packet, list_of_handles=INTERESTING_CALLSIGNS):
 
 # SAMPLE_PACKET = '2014-04-06 14:44:01 EEST: J43VHF-11>APRS,J43VAI*,qAR,SV3RF:/114358h3807.13N/02347.25EF000/000/A=000922/TEMP=20/VOLT=10744  j43vhf.wordpress.com'
 def parse_aprs_packet(packet, callsign):
+    """ Parses APRS packets and returns desired info.
+    """
     callsign = is_interesting_aprs_packet(packet)
     p_call = packet.index(callsign)
     p_path = p_call + len(callsign)
@@ -128,6 +135,8 @@ def parse_aprs_packet(packet, callsign):
 
 
 def point_antenna(azimuth, altitude):
+    """ Points antenna to provided azimuth altitude pair.
+    """
     sock = trackersocket.trackersocket()
     s = 'P ' + str(azimuth) + ' ' + str(altitude)
     print((s + str('\n')))
@@ -135,6 +144,8 @@ def point_antenna(azimuth, altitude):
 
 
 def track_luftballon():
+    """ Tracks balloon using previous 2 positions and time taken.
+    """
     pass
 
 
