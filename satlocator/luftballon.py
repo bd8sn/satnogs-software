@@ -93,6 +93,7 @@ def grab_stdin():
             luft_coords = parse_aprs_packet(line, callsign)
             azalt = calculate_azimuth_elevation(HSGR, luft_coords)
             print(azalt)
+            point_antenna(azalt[0], azalt[1])
 
 
 def is_interesting_aprs_packet(packet, list_of_handles=INTERESTING_CALLSIGNS):
@@ -124,6 +125,13 @@ def parse_aprs_packet(packet, callsign):
             elev = int(message[25 + 3 + message[25:].index('/A='):25 + 3 + 6 + message[25:].index('/A=')]) * 0.3048
 
     return(lat, lon, elev, timestamp_luft)
+
+
+def point_antenna(azimuth, altitude):
+    sock = trackersocket.trackersocket()
+    s = 'P ' + str(azimuth) + ' ' + str(altitude)
+    print((s + str('\n')))
+    sock.send(s + str('\n'))
 
 
 def track_luftballon():
