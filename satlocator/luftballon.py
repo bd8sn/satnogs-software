@@ -88,9 +88,10 @@ def _test_calculate_azimuth_elevation():
 def grab_stdin():
     for line in sys.stdin:
         #print 'input was:',line
-        if is_interesting_aprs_packet(line):
-            luft_coords = parse_aprs_packet(line)
-            azalt = calculate_azimuth_elevation(luft_coords)
+        callsign = is_interesting_aprs_packet(line)
+        if callsign:
+            luft_coords = parse_aprs_packet(line, callsign)
+            azalt = calculate_azimuth_elevation(HSGR, luft_coords)
             print(azalt)
 
 
@@ -120,7 +121,7 @@ def parse_aprs_packet(packet, callsign):
         else:
             lat = float(message[7:14].replace('.', '').replace(message[7:9], message[7:9] + '.'))
             lon = float(message[16:24].replace('.', '').replace(message[16:19], message[16:19] + '.'))
-            elev = message[25 + 3 + message[25:].index('/A='):25 + 3 + 6 + message[25:].index('/A=')]
+            elev = int(message[25 + 3 + message[25:].index('/A='):25 + 3 + 6 + message[25:].index('/A=')]) * 0.3048
 
     return(lat, lon, elev, timestamp_luft)
 
