@@ -130,18 +130,18 @@ def parse_aprs_packet(packet, callsign):
             lat = float(message[7:14].replace('.', '').replace(message[7:9], message[7:9] + '.'))
             lon = float(message[16:24].replace('.', '').replace(message[16:19], message[16:19] + '.'))
             elev = int(message[25 + 3 + message[25:].index('/A='):25 + 3 + 6 + message[25:].index('/A=')]) * 0.3048
-
+    print(lat, lon, elev, timestamp_luft)
     return(lat, lon, elev, timestamp_luft)
 
 
 def point_antenna(azimuth, altitude):
     """ Points antenna to provided azimuth altitude pair.
     """
-    sock = trackersocket.trackersocket()
+    sock = trackersocket.trackersocket('satnogs', 4533)
     s = 'P ' + str(azimuth) + ' ' + str(altitude)
     print((s + str('\n')))
     sock.send(s + str('\n'))
-
+    sock.disconnect()
 
 def track_luftballon():
     """ Tracks balloon using previous 2 positions and time taken.
