@@ -11,7 +11,7 @@ import json
 
 import trackersocket
 
-INTERESTING_HANDLES = ['J43VHF-11']
+INTERESTING_CALLSIGNS = ['J43VHF-11']
 SAMPLE_PACKET = '2014-04-06 14:44:01 EEST: J43VHF-11>APRS,J43VAI*,qAR,SV3RF:/114358h3807.13N/02347.25EF000/000/A=000922/TEMP=20/VOLT=10744  j43vhf.wordpress.com'
 
 HSGR = (38.0171, 23.7312, 61)
@@ -95,7 +95,7 @@ def grab_stdin():
             print(azalt)
 
 
-def is_interesting_aprs_packet(packet, list_of_handles=INTERESTING_HANDLES):
+def is_interesting_aprs_packet(packet, list_of_handles=INTERESTING_CALLSIGNS):
     for callsign in list_of_handles:
         try:
             if packet.index(callsign) >= 0:
