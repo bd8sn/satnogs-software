@@ -1,0 +1,21 @@
+#!/bin/sh
+
+PPM=45
+FREQ=144800k
+SAMPRATE=22050
+FIFO=/tmp/satnogs
+
+if [ ! -e "$FIFO" ]; then
+	echo "Warning: FIFO file does not exists. Creating it at $FIFO..."
+	mkfifo "$FIFO"
+fi
+
+# Play audio from named pipe
+aplay -t raw -r "$SAMPRATE" -f S16_LE -t raw -c 1 "$FIFO" &
+
+# Convert to typical APRS message format
+rtl_fm -p "$PPM" -f "$FREQ" -s "$SAMPRATE" | \
+	tee "$FIFO" | \
+	multimon -q -a AFSK1200 -t raw /dev/stdin | \
+	sed ':a;N;/AFSK1200: /! ba;s/\n/msg/g;s/AFSK1200: fm \(\S\+\) to \(\S\+\) via \(\S\+\) .*msg/\1>\2,\3:/;s/AFSK1200: fm \(\S\+\) to \(\S\+\) .*msg/\1>\2:/'
+
