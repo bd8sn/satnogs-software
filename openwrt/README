@@ -1,0 +1,16 @@
+=============================================
+Setting up OpenWrt for SatNOGS ground station
+=============================================
+
+1. Download the latest OpenWrt stable factory image for TP-Link TL-WR703N
+2. Flash the image to TLWR703N using the web interface (192.168.1.1 / admin:admin)
+3. Set up the router (network, password, wireless, etc) via the web
+   interface (http://root@192.168.1.1)
+4. Install 'hamlib-easycomm' and 'rtl-sdr' packages
+5. scp over 'scripts/satnogs.sh' script to the router
+6. Add 'satnogs.sh' script to '/etc/rc.local'
+7. Reboot router
+
+* OpenWrt wiki - http://wiki.openwrt.org/
+
+
