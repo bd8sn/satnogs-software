@@ -1,9 +1,11 @@
-SatNOGS Software
-================
+# SatNOGS Software
 
-Software for SatNOGS project.
+Various software components and scripts for SatNOGS project.
 
-This repository includes all custom made software components for SatNOGS project.
+More information can be found in our [documentation](https://satnogs.org/documentation/software).
 
-More information can be found in our documentation page:
-https://satnogs.org/documentation/software
+## License
+
+&copy; 2014-2015 [Libre Space Foundation](http://librespacefoundation.org).
+
+Licensed under the [GPLv3](LICENSE).
