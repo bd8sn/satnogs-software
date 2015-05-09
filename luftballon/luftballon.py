@@ -6,14 +6,19 @@ import time
 import threading
 import json
 
-import aprslib
+try:
+    import aprslib
+except:
+    sys.stdout.write('Please install dependencies: aprslib\n')
+    exit(0)
 
 import trackersocket
 
 
 INTERESTING_CALLSIGNS = ['J43VHF-11']
-SAMPLE_PACKET = 'J43VHF-11>APRS,J43VAI*,qAR,SV3RF:/114358h3807.13N/02347.25EF000/000/A=000922/TEMP=20/VOLT=10744'
 OBSERVER = (38.0171, 23.7312, 61)
+TCP_IP = '127.0.0.1'
+TCP_PORT = 5005
 
 
 def calculate_azimuth_elevation(pointA, pointB):
@@ -119,7 +124,7 @@ def parse_aprs_packet(packet, callsign):
 
 def point_antenna(azimuth, altitude):
     """Points antenna to provided azimuth altitude pair."""
-    sock = trackersocket.trackersocket('satnogs', 4533)
+    sock = trackersocket.trackersocket(TCP_IP, TCP_PORT)
     s = 'P ' + str(azimuth) + ' ' + str(altitude)
     print((s + str('\n')))
     sock.send(s + str('\n'))
