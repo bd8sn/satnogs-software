@@ -72,7 +72,7 @@ def calculate_azimuth_elevation(pointA, pointB):
 
     hBase = R + pointA[2]
     hTarget = R + pointB[2]
-    phi = math.pi - theta - math.atan((hBase * math.sin(theta)) / (hTarget - hBase * math.cos(theta)))
+    phi = math.pi - theta - math.atan2((hBase * math.sin(theta)), (hTarget - hBase * math.cos(theta)))
     altitude = math.degrees(phi) - 90
 
     # return calculated azimuth and alt
