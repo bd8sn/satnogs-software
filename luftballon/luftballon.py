@@ -1,20 +1,20 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" This should never have reached gihub :P
-
-    Look away people, look away...
-"""
 import math
 import sys
 import time
 import threading
 import json
 
+import aprslib
+
 import trackersocket
 
-INTERESTING_CALLSIGNS = ['J43VHF-11']
-SAMPLE_PACKET = '2014-04-06 14:44:01 EEST: J43VHF-11>APRS,J43VAI*,qAR,SV3RF:/114358h3807.13N/02347.25EF000/000/A=000922/TEMP=20/VOLT=10744  j43vhf.wordpress.com'
 
-HSGR = (38.0171, 23.7312, 61)
+INTERESTING_CALLSIGNS = ['J43VHF-11']
+SAMPLE_PACKET = 'J43VHF-11>APRS,J43VAI*,qAR,SV3RF:/114358h3807.13N/02347.25EF000/000/A=000922/TEMP=20/VOLT=10744'
+OBSERVER = (38.0171, 23.7312, 61)
+
 
 def calculate_azimuth_elevation(pointA, pointB):
     """
@@ -34,8 +34,6 @@ def calculate_azimuth_elevation(pointA, pointB):
         The azimuth and elevation in degrees
     Returns Type:
         float, float
-
-        Authored by manthos and azisi. All praise and blame on them ;)
     """
 
     if (type(pointA) != tuple) or (type(pointB) != tuple):
@@ -64,7 +62,6 @@ def calculate_azimuth_elevation(pointA, pointB):
     azimuth = (initial_bearing + 360) % 360
 
     # calculations for elevation
-
     # calculations to fint the angle theta, between the 2 vectors
     # starting from the center of the earth pointing to base and target
     a = math.sin(diffLat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(diffLong / 2) ** 2
@@ -75,28 +72,26 @@ def calculate_azimuth_elevation(pointA, pointB):
     phi = math.pi - theta - math.atan2((hBase * math.sin(theta)), (hTarget - hBase * math.cos(theta)))
     altitude = math.degrees(phi) - 90
 
-    # return calculated azimuth and alt
     return azimuth, altitude
 
 
 def _test_calculate_azimuth_elevation():
-    """ Simple test case for calculate_azimuth_elevation function.
-    """
+    """Simple test case for calculate_azimuth_elevation function."""
     pointA = 37.6454331, 24.1062927, 10
     pointB = 37.6454333, 24.3085681, 30000
     print((calculate_azimuth_elevation(pointA, pointB)))
 
 
 def grab_stdin():
-    """ Grabs input from stdin and if it recognises a desired callsign,
-        points the antenna to its location.
+    """
+    Grabs input from stdin and if it recognises a desired callsign,
+    points the antenna to its location.
     """
     for line in sys.stdin:
-        #print 'input was:',line
         callsign = is_interesting_aprs_packet(line)
         if callsign:
             luft_coords = parse_aprs_packet(line, callsign)
-            azalt = calculate_azimuth_elevation(HSGR, luft_coords)
+            azalt = calculate_azimuth_elevation(OBSERVER, luft_coords)
             print(azalt)
             point_antenna(azalt[0], azalt[1])
 
@@ -111,47 +106,25 @@ def is_interesting_aprs_packet(packet, list_of_handles=INTERESTING_CALLSIGNS):
     return False
 
 
-# SAMPLE_PACKET = '2014-04-06 14:44:01 EEST: J43VHF-11>APRS,J43VAI*,qAR,SV3RF:/114358h3807.13N/02347.25EF000/000/A=000922/TEMP=20/VOLT=10744  j43vhf.wordpress.com'
 def parse_aprs_packet(packet, callsign):
-    """ Parses APRS packets and returns desired info.
-    """
-    callsign = is_interesting_aprs_packet(packet)
-    p_call = packet.index(callsign)
-    p_path = p_call + len(callsign)
-    if packet[p_path:][0] != '>':
-        print('Error: > not found after callsign')
-    else:
-        p_message = p_path + 2 + packet[p_path + 1:].index('/')
-        message = packet[p_message:]
-        timestamp_luft = message[:6]
-        if message[6] != 'h':
-            print('Error: h not found after timestamp')
-        else:
-            lat = float(message[7:14].replace('.', '').replace(message[7:9], message[7:9] + '.'))
-            lon = float(message[16:24].replace('.', '').replace(message[16:19], message[16:19] + '.'))
-            elev = int(message[25 + 3 + message[25:].index('/A='):25 + 3 + 6 + message[25:].index('/A=')]) * 0.3048
-    print(lat, lon, elev, timestamp_luft)
-    return(lat, lon, elev, timestamp_luft)
+    """Parses APRS packets and returns desired info."""
+    parsed = aprslib.parse(packet)
+    lat = parsed['latitude']
+    lon = parsed['longitude']
+    alt = parsed['altitude']
+    timestamp = parsed['timestamp']
+    print(lat, lon, alt, timestamp)
+    return(lat, lon, alt, timestamp)
 
 
 def point_antenna(azimuth, altitude):
-    """ Points antenna to provided azimuth altitude pair.
-    """
+    """Points antenna to provided azimuth altitude pair."""
     sock = trackersocket.trackersocket('satnogs', 4533)
     s = 'P ' + str(azimuth) + ' ' + str(altitude)
     print((s + str('\n')))
     sock.send(s + str('\n'))
     sock.disconnect()
 
-def track_luftballon():
-    """ Tracks balloon using previous 2 positions and time taken.
-    """
-    pass
-
-
-def main():
-    #_test_calculate_azimuth_elevation()
-    grab_stdin()
 
 if __name__ == "__main__":
-    main()
+    grab_stdin()
