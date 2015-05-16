@@ -34,7 +34,7 @@ LL_BUFFERS=20
 # Bring up rotctl daemon
 [ "$USE_RIGCTLD" = 1 ] && {
 	killall -q rotctld
-	rotctld -m $MODEL -s $BAUD -t $PORT &
+	rotctld -m $MODEL -s $BAUD -r $PORT &
 }
 
 # Bring up rtl_tcp
